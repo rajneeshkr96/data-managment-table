@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import axios from 'axios';
 import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator';
 import { OverlayPanel } from 'primereact/overlaypanel';
-
-interface TableProps {
-    page?: number;
-}
-
 interface Data {
     id: number;
     title: string;
@@ -27,7 +22,7 @@ interface CustomSelection {
     notSelected: number[];
 }
 
-const Table: React.FC<TableProps> = ({ page }) => {
+const Table = () => {
     const [data, setData] = useState<Data[]>([]);
     const [selectedData, setSelectedData] = useState<Data[]>([]);
     const [first, setFirst] = useState(0);
@@ -36,8 +31,7 @@ const Table: React.FC<TableProps> = ({ page }) => {
     const [customRow, setCustomRow] = useState(0);
     const [loading, setLoading] = useState(false);
     const [customSelect, setCustomSelect] = useState<CustomSelection>({ select: false, start: 0, end: 12, limit: 12, notSelected: [] });
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
-    const op = useRef(null);
+    const op = useRef<OverlayPanel>(null);
 
     const selectedItem = (data: Data[]) => {
         return data.filter(item => !customSelect.notSelected.includes(item.id));
@@ -57,7 +51,7 @@ const Table: React.FC<TableProps> = ({ page }) => {
                 if (customSelect.select  && customSelect.start<= Math.floor(first/rows) && customSelect.end > Math.floor(first/rows)) {
                     console.log(Math.floor(first/rows) , customSelect.end,"value..")
                     if(Math.floor(first/rows)+1 === customSelect.end ){
-                        const val = selectedItem(data.filter((item, index) => index < customSelect.limit));
+                        const val = selectedItem(data.filter((_, index) => index < customSelect.limit));
                         setSelectedData(val)
                         
                     }else{
@@ -77,11 +71,10 @@ const Table: React.FC<TableProps> = ({ page }) => {
 
     // Update the selection based on selected ids and page
 
-    const handleSelectionChange = (e) => {
+    const handleSelectionChange = (e:any) => {
         const value: Data[] = e.value;
         const newSelectedIds = value.map(item => item.id);
         setSelectedData(value);
-        setSelectedIds(newSelectedIds);
         
         if (customSelect.select) {
             const notSelected = selectedData
@@ -96,7 +89,7 @@ const Table: React.FC<TableProps> = ({ page }) => {
         setRows(event.rows);
     };
 
-    const handleCustomSelect = (e) => {
+    const handleCustomSelect = (e:any) => {
         op.current?.toggle(e);
     };
 
@@ -111,7 +104,7 @@ const Table: React.FC<TableProps> = ({ page }) => {
         setCustomSelect({ ...customSelect, select: true, limit: limit,start:fir,end:end });
         op.current?.hide();
         if(customRow<=rows){
-            setSelectedData(selectedItem(data).filter((item, index) => index < limit));
+            setSelectedData(selectedItem(data).filter((_, index) => index < limit));
         }else{
             setSelectedData(selectedItem(data));
         }
@@ -133,7 +126,7 @@ const Table: React.FC<TableProps> = ({ page }) => {
 
     return (
         <div className='p-1 bg-gray-500 rounded-lg'>
-            {loading && <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[#2929293a] text-white'>Loading...</div>}
+            {loading && <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[#2929293a] text-white z-10'>Loading...</div>}
             <DataTable
                 value={data}
                 selection={selectedData}
