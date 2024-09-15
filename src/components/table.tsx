@@ -126,7 +126,7 @@ const Table = () => {
 
     return (
         <div className='p-1 bg-gray-500 rounded-lg'>
-            {loading && <div className='absolute top-0 left-0 w-screen h-screen flex justify-center items-center bg-[#2929293a] text-white z-10'>Loading...</div>}
+            {loading && <div className='fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-[#2929293a] text-white z-10'>Loading...</div>}
             <DataTable
                 value={data}
                 selection={selectedData}
